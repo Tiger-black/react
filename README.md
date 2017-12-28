@@ -1,29 +1,7 @@
-This is a collection of simple demos of React.js.
+#react
+学习react 从这里开始
 
-These demos are purposely written in a simple and clear style. You will find no difficulty in following them to learn the powerful library.
-
-## Related Projects
-
-- [Flux Demo](https://github.com/ruanyf/extremely-simple-flux-demo)
-- [Webpack Demos](https://github.com/ruanyf/webpack-demos)
-- [React Router Tutorial](https://github.com/reactjs/react-router-tutorial)
-- [CSS Modules Demos](https://github.com/ruanyf/css-modules-demos)
-- [React Testing Demo](https://github.com/ruanyf/react-testing-demo)
-- [A boilerplate for React-Babel-Webpack project](https://github.com/ruanyf/react-babel-webpack-boilerplate)
-
-## How to use
-
-First copy the repo into your disk.
-
-```bash
-$ git clone git@github.com:ruanyf/react-demos.git
-```
-
-Then play with the source files under the repo's demo* directories.
-
-## HTML Template
-
-```html
+一、HTML 模板
 <!DOCTYPE html>
 <html>
   <head>
@@ -34,544 +12,383 @@ Then play with the source files under the repo's demo* directories.
   <body>
     <div id="example"></div>
     <script type="text/babel">
-
       // ** Our code goes here! **
-
     </script>
   </body>
 </html>
-```
-
-## Index
-
-1. [Render JSX](#demo01-render-jsx)
-1. [Use JavaScript in JSX](#demo02-use-javascript-in-jsx)
-1. [Use array in JSX](#demo03-use-array-in-jsx)
-1. [Define a component](#demo04-define-a-component)
-1. [this.props.children](#demo05-thispropschildren)
-1. [PropTypes](#demo06-proptypes)
-1. [Finding a DOM node](#demo07-finding-a-dom-node)
-1. [this.state](#demo08-thisstate)
-1. [Form](#demo09-form)
-1. [Component Lifecycle](#demo10-component-lifecycle)
-1. [Ajax](#demo11-ajax)
-1. [Display value from a Promise](#demo12-display-value-from-a-promise)
-1. [Server-side rendering](#demo13-server-side-rendering)
-
----
-
-## Demo01: Render JSX
-
-[demo](http://ruanyf.github.io/react-demos/demo01/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo01/index.html)
-
-The template syntax in React is called [JSX](http://facebook.github.io/react/docs/displaying-data.html#jsx-syntax). It is allowed in JSX to put HTML tags directly into JavaScript codes. `ReactDOM.render()` is the method which translates JSX into HTML, and renders it into the specified DOM node.
-
-```js
-ReactDOM.render(
-  <h1>Hello, world!</h1>,
-  document.getElementById('example')
-);
-```
-
-Attention, you have to use `<script type="text/babel">` to indicate JSX codes, and include `browser.min.js`, which is a [browser version](https://babeljs.io/docs/usage/browser/) of Babel and could be get inside a [babel-core@5](https://www.npmjs.com/package/babel-core) npm release, to actually perform the transformation in the browser.
-
-Before v0.14, React use `JSTransform.js` to translate `<script type="text/jsx">`. It has been deprecated ([more info](https://facebook.github.io/react/blog/2015/06/12/deprecating-jstransform-and-react-tools.html)).
-
-## Demo02: Use JavaScript in JSX
-
-[demo](http://ruanyf.github.io/react-demos/demo02/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo02/index.html)
-
-You could also use JavaScript in JSX. It takes angle brackets (&lt;) as the beginning of HTML syntax, and curly brackets (`{`) as the beginning of JavaScript syntax.
-
-```js
-var names = ['Alice', 'Emily', 'Kate'];
-
-ReactDOM.render(
-  <div>
-  {
-    names.map(function (name) {
-      return <div>Hello, {name}!</div>
-    })
-  }
-  </div>,
-  document.getElementById('example')
-);
-```
-
-## Demo03: Use array in JSX
-
-[demo](http://ruanyf.github.io/react-demos/demo03/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo03/index.html)
-
-If a JavaScript variable is an array, JSX will implicitly concat all members of the array.
-
-```js
-var arr = [
-  <h1>Hello world!</h1>,
-  <h2>React is awesome</h2>,
-];
-ReactDOM.render(
-  <div>{arr}</div>,
-  document.getElementById('example')
-);
-```
-
-## Demo04: Define a component
-
-[demo](http://ruanyf.github.io/react-demos/demo04/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo04/index.html)
-
-`React.createClass()` creates a component class, which implements a render method to return an component instance of the class. You don't need to call `new` on the class in order to get an instance, just use it as a normal HTML tag.
-
-```javascript
-var HelloMessage = React.createClass({
-  render: function() {
-    return <h1>Hello {this.props.name}</h1>;
-  }
-});
-
-ReactDOM.render(
-  <HelloMessage name="John" />,
-  document.getElementById('example')
-);
-```
-
-Components would have attributes, and you can use `this.props.[attribute]` to access them, just like `this.props.name` of `<HelloMessage name="John" />` is John.
-
-Please remember the first letter of the component's name must be capitalized, otherwise React will throw an error. For instance, `HelloMessage` as a component's name is OK, but `helloMessage` is not allowed. And a React component should only have one top child node.
-
-```javascript
-// wrong
-var HelloMessage = React.createClass({
-  render: function() {
-    return <h1>
-      Hello {this.props.name}
-    </h1><p>
-      some text
-    </p>;
-  }
-});
-
-// correct
-var HelloMessage = React.createClass({
-  render: function() {
-    return <div>
-      <h1>Hello {this.props.name}</h1>
-      <p>some text</p>
-    </div>;
-  }
-});
-```
-
-## Demo05: this.props.children
-
-[demo](http://ruanyf.github.io/react-demos/demo05/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo05/index.html)
-
-React uses `this.props.children` to access a component's children nodes.
-
-```javascript
-var NotesList = React.createClass({
-  render: function() {
-    return (
-      <ol>
-      {
-        React.Children.map(this.props.children, function (child) {
-          return <li>{child}</li>;
-        })
-      }
-      </ol>
-    );
-  }
-});
-
-ReactDOM.render(
-  <NotesList>
-    <span>hello</span>
-    <span>world</span>
-  </NotesList>,
-  document.getElementById('example')
-);
-```
-
-Please be mindful that the value of `this.props.children` has three possibilities. If the component has no children node, the value is `undefined`; If single children node, an object; If multiple children nodes, an array. You should be careful to handle it.
-
-React gave us an utility [`React.Children`](https://facebook.github.io/react/docs/top-level-api.html#react.children) for dealing with the `this.props.children`'s opaque data structure. You could use `React.Children.map` to iterate `this.props.children` without worring its data type being `undefined` or `object`. Check [official document](https://facebook.github.io/react/docs/top-level-api.html#react.children) for more methods `React.Children` offers.
-
-## Demo06: PropTypes
-
-[demo](http://ruanyf.github.io/react-demos/demo06/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo06/index.html)
-
-Components have many specific attributes which are called ”props” in React and can be of any type.
-
-Sometimes you need a way to validate these props. You don't want users have the freedom to input anything into your components.
-
-React has a solution for this and it's called PropTypes.
-
-```javascript
-var MyTitle = React.createClass({
-  propTypes: {
-    title: React.PropTypes.string.isRequired,
-  },
-
-  render: function() {
-     return <h1> {this.props.title} </h1>;
-   }
-});
-```
-
-The above component of `MyTitle` has a props of `title`. PropTypes tells React that the title is required and its value should be a string.
-
-Now we give `Title` a number value.
-
-```javascript
-var data = 123;
-
-ReactDOM.render(
-  <MyTitle title={data} />,
-  document.getElementById('example')
-);
-```
-
-It means the props doesn't pass the validation, and the console will show you an error message.
-
-```bash
-Warning: Failed propType: Invalid prop `title` of type `number` supplied to `MyTitle`, expected `string`.
-```
-
-Visit [official doc](http://facebook.github.io/react/docs/reusable-components.html) for more PropTypes options.
-
-P.S. If you want to give the props a default value, use `getDefaultProps()`.
-
-```javascript
-var MyTitle = React.createClass({
-  getDefaultProps : function () {
-    return {
-      title : 'Hello World'
-    };
-  },
-
-  render: function() {
-     return <h1> {this.props.title} </h1>;
-   }
-});
-
-ReactDOM.render(
-  <MyTitle />,
-  document.getElementById('example')
-);
-```
-
-## Demo07: Finding a DOM node
-
-[demo](http://ruanyf.github.io/react-demos/demo07/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo07/index.html)
-
-Sometimes you need to reference a DOM node in a component. React gives you the `ref` attribute to find it.
-
-```js
-var MyComponent = React.createClass({
-  handleClick: function() {
-    this.refs.myTextInput.focus();
-  },
-  render: function() {
-    return (
-      <div>
-        <input type="text" ref="myTextInput" />
-        <input type="button" value="Focus the text input" onClick={this.handleClick} />
-      </div>
-    );
-  }
-});
-
-ReactDOM.render(
-  <MyComponent />,
-  document.getElementById('example')
-);
-```
-
-The desired DOM node should have a `ref` attribute, and `this.refs.[refName]` would return the corresponding DOM node. Please be mindful that you could do that only after this component has been mounted into the DOM, otherwise you get `null`.
-
-## Demo08: this.state
-
-[demo](http://ruanyf.github.io/react-demos/demo08/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo08/index.html)
-
-React thinks of component as state machines, and uses `this.state` to hold component's state, `getInitialState()` to initialize `this.state`(invoked before a component is mounted), `this.setState()` to update `this.state` and re-render the component.
-
-```js
-var LikeButton = React.createClass({
-  getInitialState: function() {
-    return {liked: false};
-  },
-  handleClick: function(event) {
-    this.setState({liked: !this.state.liked});
-  },
-  render: function() {
-    var text = this.state.liked ? 'like' : 'haven\'t liked';
-    return (
-      <p onClick={this.handleClick}>
-        You {text} this. Click to toggle.
-      </p>
-    );
-  }
-});
-
-ReactDOM.render(
-  <LikeButton />,
-  document.getElementById('example')
-);
-```
-
-You could use component attributes to register event handlers, just like `onClick`, `onKeyDown`, `onCopy`, etc. Official Document has all [supported events](http://facebook.github.io/react/docs/events.html#supported-events).
-
-## Demo09: Form
-
-[demo](http://ruanyf.github.io/react-demos/demo09/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo09/index.html)
-
-According to React's design philosophy, `this.state` describes the state of component and is mutated via user interactions, and `this.props` describes the properties of component and is stable and immutable.
-
-Since that, the `value` attribute of Form components, such as &lt;input&gt;, &lt;textarea&gt;, and &lt;option&gt;, is unaffected by any user input. If you wanted to access or update the value in response to user input, you could use the onChange event.
-
-```js
-var Input = React.createClass({
-  getInitialState: function() {
-    return {value: 'Hello!'};
-  },
-  handleChange: function(event) {
-    this.setState({value: event.target.value});
-  },
-  render: function () {
-    var value = this.state.value;
-    return (
-      <div>
-        <input type="text" value={value} onChange={this.handleChange} />
-        <p>{value}</p>
-      </div>
-    );
-  }
-});
-
-ReactDOM.render(<Input/>, document.getElementById('example'));
-```
-
-More information on [official document](http://facebook.github.io/react/docs/forms.html).
-
-## Demo10: Component Lifecycle
-
-[demo](http://ruanyf.github.io/react-demos/demo10/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo10/index.html)
-
-Components have three main parts of [their lifecycle](https://facebook.github.io/react/docs/working-with-the-browser.html#component-lifecycle): Mounting(being inserted into the DOM), Updating(being re-rendered) and Unmounting(being removed from the DOM). React provides hooks into these lifecycle part. `will` methods are called right before something happens, and `did` methods which are called right after something happens.
-
-```js
-var Hello = React.createClass({
-  getInitialState: function () {
-    return {
-      opacity: 1.0
-    };
-  },
-
-  componentDidMount: function () {
-    this.timer = setInterval(function () {
-      var opacity = this.state.opacity;
-      opacity -= .05;
-      if (opacity < 0.1) {
-        opacity = 1.0;
-      }
-      this.setState({
-        opacity: opacity
-      });
-    }.bind(this), 100);
-  },
-
-  render: function () {
-    return (
-      <div style={{opacity: this.state.opacity}}>
+注意：使用react的<script> 标签的 type 属性为 text/babel 。这是因为 React 独有的 JSX 语法，跟 JavaScript 不兼容。凡是使用 JSX 的地方，都要加上 type="text/babel"
+
+    上面代码一共用了三个库： react.js 、react-dom.js 和 Browser.js ，它们必须首先加载。
+    其中，react.js 是 React 的核心库，react-dom.js 是提供与 DOM 相关的功能，
+    Browser.js 的作用是将 JSX 语法转为 JavaScript 语法，这一步很消耗时间，实际上线的时候，应该将它放到服务器完成。
+
+
+二、ReactDOM.render()
+  ReactDOM.render(
+    <h1>Hello, world!</h1>,
+    document.getElementById('example')
+  );
+  ReactDOM.render 是 React 的最基本方法，用于将模板转为 HTML 语言，并插入指定的 DOM 节点。
+
+三、JSX 语法
+  HTML 语言直接写在 JavaScript 语言之中，不加任何引号，这就是 JSX 的语法，它允许 HTML 与 JavaScript 的混写
+
+  var names = ['Alice', 'Emily', 'Kate'];
+  ReactDOM.render(
+    <div>
+    {
+      names.map(function (name) {
+        return <div>Hello, {name}!</div>
+      })
+    }
+    </div>,
+    document.getElementById('example')
+  );
+  上面代码体现了 JSX 的基本语法规则：遇到 HTML 标签（以 < 开头），就用 HTML 规则解析；遇到代码块（以 { 开头），就用 JavaScript 规则解析查看 ( demo02 ）。
+
+  JSX 允许直接在模板插入 JavaScript 变量。如果这个变量是一个数组，则会展开这个数组的所有成员（demo03 ）。
+  var arr = [
+    <h1>Hello world!</h1>,
+    <h2>React is awesome</h2>,
+  ];
+  ReactDOM.render(
+    <div>{arr}</div>,
+    document.getElementById('example')
+  );
+  上面代码的arr变量是一个数组，结果 JSX 会把它的所有成员，添加到模板
+
+四、组件
+  React 允许将代码封装成组件（component），然后像插入普通 HTML 标签一样，在网页中插入这个组件。React.createClass 方法就用于生成一个组件类（查看 demo04）。
+
+  var HelloMessage = React.createClass({
+    render: function() {
+      return <h1>Hello {this.props.name}</h1>;
+    }
+  });
+
+  ReactDOM.render(
+    <HelloMessage name="John" />,
+    document.getElementById('example')
+  );
+  上面代码中，变量 HelloMessage 就是一个组件类。模板插入 <HelloMessage /> 时，会自动生成 HelloMessage 的一个实例（下文的"组件"都指组件类的实例）。所有组件类都必须有自己的 render 方法，用于输出组件。
+
+  注意:组件类的第一个字母必须大写，否则会报错，比如HelloMessage不能写成helloMessage。另外，组件类只能包含一个顶层标签，否则也会报错。
+  var HelloMessage = React.createClass({
+    render: function() {
+      return <h1>
         Hello {this.props.name}
-      </div>
-    );
-  }
-});
-
-ReactDOM.render(
-  <Hello name="world"/>,
-  document.getElementById('example')
-);
-```
-
-The following is [a whole list of lifecycle methods](http://facebook.github.io/react/docs/component-specs.html#lifecycle-methods).
-
-- **componentWillMount()**: Fired once, before initial rendering occurs. Good place to wire-up message listeners. `this.setState` doesn't work here.
-- **componentDidMount()**: Fired once, after initial rendering occurs. Can use `this.getDOMNode()`.
-- **componentWillUpdate(object nextProps, object nextState)**: Fired after the component's updates are made to the DOM. Can use `this.getDOMNode()` for updates.
-- **componentDidUpdate(object prevProps, object prevState)**: Invoked immediately after the component's updates are flushed to the DOM. This method is not called for the initial render. Use this as an opportunity to operate on the DOM when the component has been updated.
-- **componentWillUnmount()**: Fired immediately before a component is unmounted from the DOM. Good place to remove message listeners or general clean up.
-- **componentWillReceiveProps(object nextProps)**: Fired when a component is receiving new props. You might want to `this.setState` depending on the props.
-- **shouldComponentUpdate(object nextProps, object nextState)**: Fired before rendering when new props or state are received. `return false` if you know an update isn't needed.
-
-## Demo11: Ajax
-
-[demo](http://ruanyf.github.io/react-demos/demo11/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo11/index.html)
-
-How to get the data of a component from a server or an API provider? The answer is using Ajax to fetch data in the event handler of `componentDidMount`. When the server response arrives, store the data with `this.setState()` to trigger a re-render of your UI.
-
-```js
-var UserGist = React.createClass({
-  getInitialState: function() {
-    return {
-      username: '',
-      lastGistUrl: ''
-    };
-  },
-
-  componentDidMount: function() {
-    $.get(this.props.source, function(result) {
-      var lastGist = result[0];
-      if (this.isMounted()) {
-        this.setState({
-          username: lastGist.owner.login,
-          lastGistUrl: lastGist.html_url
-        });
-      }
-    }.bind(this));
-  },
-
-  render: function() {
-    return (
-      <div>
-        {this.state.username}'s last gist is
-        <a href={this.state.lastGistUrl}>here</a>.
-      </div>
-    );
-  }
-});
-
-ReactDOM.render(
-  <UserGist source="https://api.github.com/users/octocat/gists" />,
-  document.getElementById('example')
-);
-```
-
-## Demo12: Display value from a Promise
-
-[demo](http://ruanyf.github.io/react-demos/demo12/) / [source](https://github.com/ruanyf/react-demos/blob/master/demo12/index.html)
-
-This demo is inspired by Nat Pryce's article ["Higher Order React Components"](http://natpryce.com/articles/000814.html).
-
-If a React component's data is received asynchronously, we can use a Promise object as the component's property also, just as the following.
-
-```javascript
-ReactDOM.render(
-  <RepoList
-    promise={$.getJSON('https://api.github.com/search/repositories?q=javascript&sort=stars')}
-  />,
-  document.getElementById('example')
-);
-```
-
-The above code takes data from Github's API, and the `RepoList` component gets a Promise object as its property.
-
-Now, while the promise is pending, the component displays a loading indicator. When the promise is resolved successfully, the component displays a list of repository information. If the promise is rejected, the component displays an error message.
-
-```javascript
-var RepoList = React.createClass({
-  getInitialState: function() {
-    return { loading: true, error: null, data: null};
-  },
-
-  componentDidMount() {
-    this.props.promise.then(
-      value => this.setState({loading: false, data: value}),
-      error => this.setState({loading: false, error: error}));
-  },
-
-  render: function() {
-    if (this.state.loading) {
-      return <span>Loading...</span>;
+      </h1><p>
+        some text
+      </p>;
     }
-    else if (this.state.error !== null) {
-      return <span>Error: {this.state.error.message}</span>;
-    }
-    else {
-      var repos = this.state.data.items;
-      var repoList = repos.map(function (repo) {
-        return (
-          <li>
-            <a href={repo.html_url}>{repo.name}</a> ({repo.stargazers_count} stars) <br/> {repo.description}
-          </li>
-        );
-      });
+  });
+  上面代码会报错，因为 HelloMessage 组件包含了两个顶层标签：h1和p。
+
+  组件的用法与原生的 HTML 标签完全一致，可以任意加入属性，比如 <HelloMessage name="John"> ，就是 HelloMessage 组件加入一个 name 属性，值为 John。组件的属性可以在组件类的 this.props 对象上获取，比如 name 属性就可以通过 this.props.name 读取。
+
+  添加组件属性，有一个地方需要注意，就是 class 属性需要写成 className ，for 属性需要写成 htmlFor ，这是因为 class 和 for 是 JavaScript 的保留字。
+
+
+五、this.props.children
+  this.props 对象的属性与组件的属性一一对应，但是有一个例外，就是 this.props.children 属性。它表示组件的所有子节点（查看 demo05）。
+  var NotesList = React.createClass({
+  render: function() {
       return (
-        <main>
-          <h1>Most Popular JavaScript Projects in Github</h1>
-          <ol>{repoList}</ol>
-        </main>
+        <ol>
+        {
+          React.Children.map(this.props.children, function (child) {
+            return <li>{child}</li>;
+          })
+        }
+        </ol>
       );
     }
-  }
-});
-```
+  });
 
-## Demo13: Server-side rendering
+  ReactDOM.render(
+    <NotesList>
+      <span>hello</span>
+      <span>world</span>
+    </NotesList>,
+    document.body
+  );
+上面代码的 NoteList 组件有两个 span 子节点，它们都可以通过 this.props.children 读取
 
-[source](https://github.com/ruanyf/react-demos/tree/master/demo13/src)
+这里需要注意， this.props.children 的值有三种可能：如果当前组件没有子节点，它就是 undefined ;如果有一个子节点，数据类型是 object ；如果有多个子节点，数据类型就是 array 。所以，处理 this.props.children 的时候要小心。
+React 提供一个工具方法 React.Children 来处理 this.props.children 。我们可以用 React.Children.map 来遍历子节点，而不用担心 this.props.children 的数据类型是 undefined 还是 object。更多的 React.Children 的方法，请参考官方文档。
 
-This demo is copied from [github.com/mhart/react-server-example](https://github.com/mhart/react-server-example), but I rewrote it with JSX syntax.
+六、PropTypes
+  组件的属性可以接受任意值，字符串、对象、函数等等都可以。有时，我们需要一种机制，验证别人使用组件时，提供的参数是否符合要求。
+  组件类的PropTypes属性，就是用来验证组件实例的属性是否符合要求（查看 demo06）
+  var MyTitle = React.createClass({
+    propTypes: {
+      title: React.PropTypes.string.isRequired,
+    },
 
-```bash
-# install the dependencies in demo13 directory
-$ npm install
+    render: function() {
+       return <h1> {this.props.title} </h1>;
+     }
+  });
+  上面的 Mytitle 组件有一个title属性。 PropTypes 告诉 React，这个 title 属性是必须的，而且它的值必须是字符串。
+  现在，我们设置 title 属性的值是一个数值。
+  var data = 123;
+  ReactDOM.render(
+      <MyTitle title={data} />,
+      document.body
+  );
 
-# translate all jsx file in src subdirectory to js file
-$ npm run build
+  此外， getDefaultProps 方法可以用来设置组件属性的默认值。
+  var MyTitle = React.createClass({
+    getDefaultProps : function () {
+      return {
+        title : 'Hello World'
+      };
+    },
 
-# launch http server
-$ node server.js
-```
+    render: function() {
+       return <h1> {this.props.title} </h1>;
+     }
+  });
 
-## Extras
+  ReactDOM.render(
+    <MyTitle />,
+    document.body
+  );
 
-### Precompiling JSX
+七、获取真实的DOM节点
+  组件并不是真实的 DOM 节点，而是存在于内存之中的一种数据结构，叫做虚拟 DOM （virtual DOM）。只有当它插入文档以后，才会变成真实的 DOM 。
+  根据 React 的设计，所有的 DOM 变动，都先在虚拟 DOM 上发生，然后再将实际发生变动的部分，反映在真实 DOM上，这种算法叫做 DOM diff ，它可以极大提高网页的性能表现。
+  但是，有时需要从组件获取真实 DOM 的节点，这时就要用到 ref 属性（查看 demo07 ）
 
-All above demos don't use JSX compilation for clarity. In production environment, ensure to precompile JSX files before putting them online.
+  var MyComponent = React.createClass({
+    handleClick: function() {
+      this.refs.myTextInput.focus();
+    },
+    render: function() {
+      return (
+        <div>
+          <input type="text" ref="myTextInput" />
+          <input type="button" value="Focus the text input" onClick={this.handleClick} />
+        </div>
+      );
+    }
+  });
 
-First, install the command-line tools [Babel](https://babeljs.io/docs/usage/cli/).
+  ReactDOM.render(
+    <MyComponent />,
+    document.getElementById('example')
+  );
 
-```bash
-$ npm install -g babel
-```
+  上面代码中，组件 MyComponent 的子节点有一个文本输入框，用于获取用户的输入。
+  这时就必须获取真实的 DOM 节点，虚拟 DOM 是拿不到用户输入的。
+  为了做到这一点，文本输入框必须有一个 ref 属性，然后 this.refs.[refName] 就会返回这个真实的 DOM 节点。
 
-Then precompile your JSX files(.jsx) into JavaScript(.js). Compiling the entire src directory and output it to the build directory, you may use the option `--out-dir` or `-d`.
+  需要注意的是，由于 this.refs.[refName] 属性获取的是真实 DOM ，所以必须等到虚拟 DOM 插入文档以后，才能使用这个属性，否则会报错。
+  上面代码中，通过为组件指定 Click 事件的回调函数，确保了只有等到真实 DOM 发生 Click 事件之后，才会读取 this.refs.[refName] 属性。
 
-```bash
-$ babel src --out-dir build
-```
+  React 组件支持很多事件，除了 Click 事件以外，还有 KeyDown 、Copy、Scroll 等，完整的事件清单请查看官方文档。
 
-Put the compiled JS files into HTML.
 
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Hello React!</title>
-    <script src="build/react.js"></script>
-    <script src="build/react-dom.js"></script>
-    <!-- No need for Browser.js! -->
-  </head>
-  <body>
-    <div id="example"></div>
-    <script src="build/helloworld.js"></script>
-  </body>
-</html>
-```
+八、this.state
+  组件免不了要与用户互动，React 的一大创新，就是将组件看成是一个状态机，一开始有一个初始状态，然后用户互动，导致状态变化，从而触发重新渲染 UI （查看 demo08 ）
+  var LikeButton = React.createClass({
+    getInitialState: function() {
+      return {liked: false};
+    },
+    handleClick: function(event) {
+      this.setState({liked: !this.state.liked});
+    },
+    render: function() {
+      var text = this.state.liked ? 'like' : 'haven\'t liked';
+      return (
+        <p onClick={this.handleClick}>
+          You {text} this. Click to toggle.
+        </p>
+      );
+    }
+  });
 
-## Useful links
+  ReactDOM.render(
+    <LikeButton />,
+    document.getElementById('example')
+  );此外，                     
+  上面代码是一个 LikeButton 组件，它的 getInitialState 方法用于定义初始状态，也就是一个对象，这个对象可以通过 this.state 属性读取。当用户点击组件，导致状态变化，this.setState 方法就修改状态值，每次修改以后，自动调用 this.render 方法，再次渲染组件。
+  由于 this.props 和 this.state 都用于描述组件的特性，可能会产生混淆。一个简单的区分方法是，this.props 表示那些一旦定义，就不再改变的特性，而 this.state 是会随着用户互动而产生变化的特性。
 
-- [React's official site](http://facebook.github.io/react)
-- [React's official examples](https://github.com/facebook/react/tree/master/examples)
-- [React (Virtual) DOM Terminology](http://facebook.github.io/react/docs/glossary.html), by Sebastian Markbåge
-- [The React Quick Start Guide](http://www.jackcallister.com/2015/01/05/the-react-quick-start-guide.html), by Jack Callister
-- [Learning React.js: Getting Started and Concepts](https://scotch.io/tutorials/learning-react-getting-started-and-concepts), by Ken Wheeler
-- [Getting started with React](http://ryanclark.me/getting-started-with-react), by Ryan Clark
-- [React JS Tutorial and Guide to the Gotchas](https://zapier.com/engineering/react-js-tutorial-guide-gotchas/), by Justin Deal
-- [React Primer](https://github.com/BinaryMuse/react-primer), by Binary Muse
-- [jQuery versus React.js thinking](http://blog.zigomir.com/react.js/jquery/2015/01/11/jquery-versus-react-thinking.html), by zigomir
+九、表单
+  用户在表单填入的内容，属于用户跟组件的互动，所以不能用 this.props 读取（查看 demo9 ）
+  var Input = React.createClass({
+    getInitialState: function() {
+      return {value: 'Hello!'};
+    },
+    handleChange: function(event) {
+      this.setState({value: event.target.value});
+    },
+    render: function () {
+      var value = this.state.value;
+      return (
+        <div>
+          <input type="text" value={value} onChange={this.handleChange} />
+          <p>{value}</p>
+        </div>
+      );
+    }
+  });
 
-## License
+  ReactDOM.render(<Input/>, document.body);
+  上面代码中，文本输入框的值，不能用 this.props.value 读取，而要定义一个 onChange 事件的回调函数，
+  通过 event.target.value 读取用户输入的值。textarea 元素、select元素、radio元素都属于这种情况，更多介绍请参考官方文档。
 
-BSD licensed
+
+十、组件的生命周期
+  组件的生命周期分成三个状态：
+  Mounting：已插入真实 DOM
+  Updating：正在被重新渲染
+  Unmounting：已移出真实 DOM
+  React 为每个状态都提供了两种处理函数，will 函数在进入状态之前调用，did 函数在进入状态之后调用，三种状态共计五种处理函数。
+
+  componentWillMount()
+  componentDidMount()
+  componentWillUpdate(object nextProps, object nextState)
+  componentDidUpdate(object prevProps, object prevState)
+  componentWillUnmount()
+
+  此外，React 还提供两种特殊状态的处理函数。
+  componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用
+  shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用
+  这些方法的详细说明，可以参考官方文档。下面是一个例子（查看 demo10 ）
+  var Hello = React.createClass({
+    getInitialState: function () {
+      return {
+        opacity: 1.0
+      };
+    },
+
+    componentDidMount: function () {
+      this.timer = setInterval(function () {
+        var opacity = this.state.opacity;
+        opacity -= .05;
+        if (opacity < 0.1) {
+          opacity = 1.0;
+        }
+        this.setState({
+          opacity: opacity
+        });
+      }.bind(this), 100);
+    },
+
+    render: function () {
+      return (
+        <div style={{opacity: this.state.opacity}}>
+          Hello {this.props.name}
+        </div>
+      );
+    }
+  });
+
+  ReactDOM.render(
+    <Hello name="world"/>,
+    document.body
+  );
+  上面代码在hello组件加载以后，通过 componentDidMount 方法设置一个定时器，每隔100毫秒，就重新设置组件的透明度，从而引发重新渲染。
+  另外，组件的style属性的设置方式也值得注意，不能写成style="opacity:{this.state.opacity};"
+  而要写成style={{opacity: this.state.opacity}}
+  这是因为 React 组件样式是一个对象，所以第一重大括号表示这是 JavaScript 语法，第二重大括号表示样式对象。
+
+
+十一、Ajax
+  组件的数据来源，通常是通过 Ajax 请求从服务器获取，可以使用 componentDidMount 方法设置 Ajax 请求，等到请求成功，再用 this.setState 方法重新渲染 UI （查看 demo11 ）
+  var UserGist = React.createClass({
+    getInitialState: function() {
+      return {
+        username: '',
+        lastGistUrl: ''
+      };
+    },
+
+    componentDidMount: function() {
+      $.get(this.props.source, function(result) {
+        var lastGist = result[0];
+        if (this.isMounted()) {
+          this.setState({
+            username: lastGist.owner.login,
+            lastGistUrl: lastGist.html_url
+          });
+        }
+      }.bind(this));
+    },
+
+    render: function() {
+      return (
+        <div>
+          {this.state.username}'s last gist is
+          <a href={this.state.lastGistUrl}>here</a>.
+        </div>
+      );
+    }
+  });
+
+  ReactDOM.render(
+    <UserGist source="https://api.github.com/users/octocat/gists" />,
+    document.body
+  );
+  上面代码使用 jQuery 完成 Ajax 请求，这是为了便于说明。React 本身没有任何依赖，完全可以不用jQuery，而使用其他库。
+
+  我们甚至可以把一个Promise对象传入组件，请看Demo12
+  ReactDOM.render(
+    <RepoList
+      promise={$.getJSON('https://api.github.com/search/repositories?q=javascript&sort=stars')}
+    />,
+    document.body
+  );
+  上面代码从Github的API抓取数据，然后将Promise对象作为属性，传给RepoList组件。
+  如果Promise对象正在抓取数据（pending状态），组件显示"正在加载"；如果Promise对象报错（rejected状态），组件显示报错信息；
+  如果Promise对象抓取数据成功（fulfilled状态），组件显示获取的数据。
+
+  var RepoList = React.createClass({
+    getInitialState: function() {
+      return { loading: true, error: null, data: null};
+    },
+
+    componentDidMount() {
+      this.props.promise.then(
+        value => this.setState({loading: false, data: value}),
+        error => this.setState({loading: false, error: error}));
+    },
+
+    render: function() {
+      if (this.state.loading) {
+        return <span>Loading...</span>;
+      }
+      else if (this.state.error !== null) {
+        return <span>Error: {this.state.error.message}</span>;
+      }
+      else {
+        var repos = this.state.data.items;
+        var repoList = repos.map(function (repo) {
+          return (
+            <li>
+              <a href={repo.html_url}>{repo.name}</a> ({repo.stargazers_count} stars) <br/> {repo.description}
+            </li>
+          );
+        });
+        return (
+          <main>
+            <h1>Most Popular JavaScript Projects in Github</h1>
+            <ol>{repoList}</ol>
+          </main>
+        );
+      }
+    }
+  });
+
+
+
+
+
+
+
+
+
+
+

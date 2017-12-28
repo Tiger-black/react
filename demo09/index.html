@@ -8,6 +8,7 @@
   <body>
     <div id="example"></div>
     <script type="text/babel">
+      var red ='#000'
       var Input = React.createClass({
         getInitialState: function() {
           return {value: 'Hello!'};
@@ -18,7 +19,8 @@
         render: function () {
           var value = this.state.value;
           return (
-            <div>
+            <div  style={{background: this.props.red}}>
+            <h1> {this.props.title} </h1>
               <input type="text" value={value} onChange={this.handleChange} />
               <p>{value}</p>
             </div>
@@ -26,7 +28,7 @@
         }
       });
 
-      ReactDOM.render(<Input/>, document.getElementById('example'));
+      ReactDOM.render(<Input red={red}/>, document.getElementById('example'));
     </script>
   </body>
 </html>

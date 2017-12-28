@@ -25,9 +25,15 @@
             this.setState({
               opacity: opacity
             });
-          }.bind(this), 100);
+          }.bind(this), 1000);
         },
-
+        
+      componentWillUpdate(object_nextProps, object_nextState){
+        console.log(1,object_nextProps,object_nextState)
+      },
+      componentDidUpdate(object_prevProps, object_prevState){
+        console.log(2,object_prevProps,object_prevState)
+      },
         render: function () {
           return (
             <div style={{opacity: this.state.opacity}}>
